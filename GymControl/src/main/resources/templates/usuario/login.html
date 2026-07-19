@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymControl - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container">
+        <div class="row justify-content-center min-vh-100 align-items-center">
+            <div class="col-md-5">
+                <div class="card shadow-sm">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">GymControl</h2>
+                        <h5 class="text-center text-muted mb-4">Sistema de Administración de Gimnasio</h5>
+                        
+                        <!-- Mensaje de error si las credenciales son incorrectas -->
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>Error:</strong> <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        
+                        <!-- Formulario de Login -->
+                        <form method="post" th:action="@{/login}">
+                            <div class="mb-3">
+                                <label for="usuario" class="form-label">Usuario</label>
+                                <input type="text" class="form-control" id="usuario" name="usuario" 
+                                       placeholder="Ingrese su usuario" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="contraseña" class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" id="contraseña" name="contraseña" 
+                                       placeholder="Ingrese su contraseña" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100 mb-3">Iniciar Sesión</button>
+                        </form>
+                        
+                        <hr>
+                        <div class="alert alert-info small mb-0">
+                            <strong>Credenciales de prueba:</strong><br>
+                            • admin / admin123<br>
+                            • entrenador1 / pass123<br>
+                            • recepcion / pass123<br>
+                            • cliente1 / cliente123
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
