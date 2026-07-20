@@ -1,6 +1,8 @@
 # GymControl
 
 GymControl es un sistema web universitario para administrar clientes, entrenadores, membresías, pagos, rutinas y asistencias de un gimnasio.
+link del video y zip de avance:
+https://drive.google.com/drive/folders/1KKEoJyK1HXeI6QWEsvjUVvOuqhxsKSCb?usp=sharing
 
 ## Tecnologías
 - Java 21
