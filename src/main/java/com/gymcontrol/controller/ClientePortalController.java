@@ -20,31 +20,85 @@ public class ClientePortalController {
     private PagoService pagoService;
 
     @GetMapping("/mi-rutina")
-    public String miRutina(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String miRutina(
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
         Usuario usuario = usuarioCliente(session, redirectAttributes);
-        if (usuario == null) return "redirect:/login";
-        if (usuario.getCliente() == null) return "redirect:/home";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        if (usuario.getCliente() == null) {
+            return "redirect:/home";
+        }
+
         model.addAttribute("usuario", usuario);
-        model.addAttribute("rutinas", rutinaService.listarPorCliente(usuario.getCliente().getId()));
+
+        model.addAttribute(
+                "rutinas",
+                rutinaService.listarPorCliente(
+                        usuario.getCliente().getId()
+                )
+        );
+
         return "cliente/mi-rutina";
     }
 
     @GetMapping("/mis-pagos")
-    public String misPagos(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+    public String misPagos(
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
         Usuario usuario = usuarioCliente(session, redirectAttributes);
-        if (usuario == null) return "redirect:/login";
-        if (usuario.getCliente() == null) return "redirect:/home";
+
+        if (usuario == null) {
+            return "redirect:/login";
+        }
+
+        if (usuario.getCliente() == null) {
+            return "redirect:/home";
+        }
+
         model.addAttribute("usuario", usuario);
-        model.addAttribute("pagos", pagoService.listarPorCliente(usuario.getCliente().getId()));
+
+        model.addAttribute(
+                "pagos",
+                pagoService.listarPorCliente(
+                        usuario.getCliente().getId()
+                )
+        );
+
         return "cliente/mis-pagos";
     }
 
-    private Usuario usuarioCliente(HttpSession session, RedirectAttributes redirectAttributes) {
-        Usuario usuario = (Usuario) session.getAttribute("usuarioEnSesion");
-        if (usuario == null) return null;
-        if (!"CLIENTE".equalsIgnoreCase(usuario.getRol())) {
-            redirectAttributes.addFlashAttribute("mensaje", "Esta opción es exclusiva para clientes.");
+    private Usuario usuarioCliente(
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+
+        Usuario usuario =
+                (Usuario) session.getAttribute("usuarioEnSesion");
+
+        if (usuario == null) {
+            return null;
         }
+
+        if (usuario.getRol() == null ||
+                !"CLIENTE".equalsIgnoreCase(
+                        usuario.getRol().getNombre()
+                )) {
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "Esta opción es exclusiva para clientes."
+            );
+
+            return null;
+        }
+
         return usuario;
     }
 }
