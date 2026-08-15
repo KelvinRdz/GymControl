@@ -23,6 +23,10 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
+    // =====================================================
+    // LISTAR CLIENTES
+    // ADMIN - RECEPCIONISTA - ENTRENADOR
+    // =====================================================
     @GetMapping("")
     public String listar(
             @RequestParam(required = false) String criterio,
@@ -41,8 +45,8 @@ public class ClienteController {
                 && !tieneRol(usuario, "ENTRENADOR")) {
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje",
-                    "No tienes permiso para acceder a clientes."
+                    "error",
+                    "No tienes permiso para acceder al módulo de clientes."
             );
 
             return "redirect:/home";
@@ -58,11 +62,18 @@ public class ClienteController {
                 criterio == null ? "" : criterio
         );
 
-        model.addAttribute("usuario", usuario);
+        model.addAttribute(
+                "usuario",
+                usuario
+        );
 
         return "clientes/lista";
     }
 
+    // =====================================================
+    // NUEVO CLIENTE
+    // ADMIN - RECEPCIONISTA
+    // =====================================================
     @GetMapping("/nuevo")
     public String nuevo(
             Model model,
@@ -74,7 +85,7 @@ public class ClienteController {
         if (!puedeGestionarClientes(usuario)) {
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje",
+                    "error",
                     "No tienes permiso para registrar clientes."
             );
 
@@ -83,11 +94,18 @@ public class ClienteController {
                     : "redirect:/home";
         }
 
-        model.addAttribute("cliente", new Cliente());
+        model.addAttribute(
+                "cliente",
+                new Cliente()
+        );
 
         return "clientes/form";
     }
 
+    // =====================================================
+    // GUARDAR CLIENTE
+    // ADMIN - RECEPCIONISTA
+    // =====================================================
     @PostMapping("/guardar")
     public String guardar(
             @Valid Cliente cliente,
@@ -101,7 +119,7 @@ public class ClienteController {
         if (!puedeGestionarClientes(usuario)) {
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje",
+                    "error",
                     "No tienes permiso para guardar clientes."
             );
 
@@ -116,9 +134,18 @@ public class ClienteController {
 
         clienteService.guardar(cliente);
 
+        redirectAttributes.addFlashAttribute(
+                "mensaje",
+                "Cliente guardado correctamente."
+        );
+
         return "redirect:/clientes";
     }
 
+    // =====================================================
+    // EDITAR CLIENTE
+    // ADMIN - RECEPCIONISTA
+    // =====================================================
     @GetMapping("/editar/{id}")
     public String editar(
             @PathVariable Long id,
@@ -131,7 +158,7 @@ public class ClienteController {
         if (!puedeGestionarClientes(usuario)) {
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje",
+                    "error",
                     "No tienes permiso para editar clientes."
             );
 
@@ -142,11 +169,28 @@ public class ClienteController {
 
         Cliente cliente = clienteService.buscarPorId(id);
 
-        model.addAttribute("cliente", cliente);
+        if (cliente == null) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "El cliente solicitado no existe."
+            );
+
+            return "redirect:/clientes";
+        }
+
+        model.addAttribute(
+                "cliente",
+                cliente
+        );
 
         return "clientes/form";
     }
 
+    // =====================================================
+    // ELIMINAR CLIENTE
+    // ADMIN - RECEPCIONISTA
+    // =====================================================
     @GetMapping("/eliminar/{id}")
     public String eliminar(
             @PathVariable Long id,
@@ -158,7 +202,7 @@ public class ClienteController {
         if (!puedeGestionarClientes(usuario)) {
 
             redirectAttributes.addFlashAttribute(
-                    "mensaje",
+                    "error",
                     "No tienes permiso para eliminar clientes."
             );
 
@@ -167,17 +211,44 @@ public class ClienteController {
                     : "redirect:/home";
         }
 
-        clienteService.eliminar(id);
+        try {
+
+            clienteService.eliminar(id);
+
+            redirectAttributes.addFlashAttribute(
+                    "mensaje",
+                    "Cliente eliminado correctamente."
+            );
+
+        } catch (Exception e) {
+
+            redirectAttributes.addFlashAttribute(
+                    "error",
+                    "No se puede eliminar este cliente porque tiene "
+                    + "membresías, pagos, rutinas, asistencias "
+                    + "o un usuario asociado."
+            );
+        }
 
         return "redirect:/clientes";
     }
 
+    // =====================================================
+    // OBTENER USUARIO DE SESIÓN
+    // =====================================================
     private Usuario obtenerUsuario(HttpSession session) {
 
-        return (Usuario) session.getAttribute("usuarioEnSesion");
+        return (Usuario) session.getAttribute(
+                "usuarioEnSesion"
+        );
     }
 
-    private boolean tieneRol(Usuario usuario, String rol) {
+    // =====================================================
+    // VALIDAR ROL
+    // =====================================================
+    private boolean tieneRol(
+            Usuario usuario,
+            String rol) {
 
         return usuario != null
                 && usuario.getRol() != null
@@ -186,7 +257,11 @@ public class ClienteController {
                 );
     }
 
-    private boolean puedeGestionarClientes(Usuario usuario) {
+    // =====================================================
+    // ADMIN Y RECEPCIONISTA PUEDEN MODIFICAR CLIENTES
+    // =====================================================
+    private boolean puedeGestionarClientes(
+            Usuario usuario) {
 
         return tieneRol(usuario, "ADMIN")
                 || tieneRol(usuario, "RECEPCIONISTA");
