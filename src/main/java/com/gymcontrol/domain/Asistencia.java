@@ -4,6 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -22,6 +24,11 @@ public class Asistencia {
 
     @NotNull(message = "La hora es obligatoria")
     private LocalTime horaIngreso;
+
+    @NotNull(message = "El cliente es obligatorio")
+    @ManyToOne
+    @JoinColumn(name = "cliente_id", nullable = false)
+    private Cliente cliente;
 
     public Long getId() {
         return id;
@@ -45,5 +52,13 @@ public class Asistencia {
 
     public void setHoraIngreso(LocalTime horaIngreso) {
         this.horaIngreso = horaIngreso;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 }

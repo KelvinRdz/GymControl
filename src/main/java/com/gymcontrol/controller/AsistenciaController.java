@@ -3,6 +3,7 @@ package com.gymcontrol.controller;
 import com.gymcontrol.domain.Asistencia;
 import com.gymcontrol.domain.Usuario;
 import com.gymcontrol.service.AsistenciaService;
+import com.gymcontrol.service.ClienteService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class AsistenciaController {
 
     @Autowired
     private AsistenciaService asistenciaService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @GetMapping("")
     public String listar(
@@ -80,6 +84,11 @@ public class AsistenciaController {
                 new Asistencia()
         );
 
+        model.addAttribute(
+                "clientes",
+                clienteService.listarTodos()
+        );
+
         return "asistencias/form";
     }
 
@@ -87,6 +96,7 @@ public class AsistenciaController {
     public String guardar(
             @Valid Asistencia asistencia,
             BindingResult result,
+            Model model,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -105,6 +115,12 @@ public class AsistenciaController {
         }
 
         if (result.hasErrors()) {
+
+            model.addAttribute(
+                    "clientes",
+                    clienteService.listarTodos()
+            );
+
             return "asistencias/form";
         }
 
@@ -139,6 +155,11 @@ public class AsistenciaController {
                 asistenciaService.buscarPorId(id)
         );
 
+        model.addAttribute(
+                "clientes",
+                clienteService.listarTodos()
+        );
+
         return "asistencias/form";
     }
 
@@ -168,7 +189,6 @@ public class AsistenciaController {
     }
 
     private Usuario obtenerUsuario(HttpSession session) {
-
         return (Usuario) session.getAttribute("usuarioEnSesion");
     }
 

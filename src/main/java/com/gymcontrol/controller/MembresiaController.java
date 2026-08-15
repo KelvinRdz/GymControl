@@ -2,6 +2,7 @@ package com.gymcontrol.controller;
 
 import com.gymcontrol.domain.Membresia;
 import com.gymcontrol.domain.Usuario;
+import com.gymcontrol.service.ClienteService;
 import com.gymcontrol.service.MembresiaService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -21,6 +22,9 @@ public class MembresiaController {
 
     @Autowired
     private MembresiaService membresiaService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @GetMapping("")
     public String listar(
@@ -80,6 +84,11 @@ public class MembresiaController {
                 new Membresia()
         );
 
+        model.addAttribute(
+                "clientes",
+                clienteService.listarTodos()
+        );
+
         return "membresias/form";
     }
 
@@ -87,6 +96,7 @@ public class MembresiaController {
     public String guardar(
             @Valid Membresia membresia,
             BindingResult result,
+            Model model,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
 
@@ -105,6 +115,12 @@ public class MembresiaController {
         }
 
         if (result.hasErrors()) {
+
+            model.addAttribute(
+                    "clientes",
+                    clienteService.listarTodos()
+            );
+
             return "membresias/form";
         }
 
@@ -139,6 +155,11 @@ public class MembresiaController {
                 membresiaService.buscarPorId(id)
         );
 
+        model.addAttribute(
+                "clientes",
+                clienteService.listarTodos()
+        );
+
         return "membresias/form";
     }
 
@@ -168,7 +189,6 @@ public class MembresiaController {
     }
 
     private Usuario obtenerUsuario(HttpSession session) {
-
         return (Usuario) session.getAttribute("usuarioEnSesion");
     }
 
